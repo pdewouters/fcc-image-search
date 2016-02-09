@@ -5,6 +5,9 @@ import express from 'express'
 import querystring from 'querystring'
 import concat from 'concat-stream'
 import request from 'request'
+import _ from 'lodash'
+import SearchModel from './inc/search_model'
+
 const app = express()
 app.set('port', (process.env.PORT || 5000))
 
@@ -14,8 +17,12 @@ app.get('/', (req, res) => {
 
 // /api/imagesearch/lolcats%20funny?offset=10
 app.get('/api/imagesearch/:search(*)/\?*', (req, res) => {
-   // console.log(req.params.search)
-   // console.log(req.query)
+
+    let search = new SearchModel({searchTerm: req.params.search})
+    search.save((err,entry) => {
+        if (err) console.log(err)
+    })
+    
     const options = {
         url: 'https://api.imgur.com/3/gallery/search/?q=' + querystring.escape(req.params.search) + '&' +  querystring.stringify(req.query),
         headers: {'Authorization': 'Client-ID ' + process.env.IMGUR_CLIENT_KEY}
@@ -24,10 +31,23 @@ app.get('/api/imagesearch/:search(*)/\?*', (req, res) => {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var info = JSON.parse(body);
-            res.send(info)
+            res.send(info.data.map(result => {
+                return _.pick(result, ['title','link'])
+            }))
         }
     }
     request(options,callback)
+})
+
+app.get('/api/latest/imagesearch', (req, res) => {
+    res.header("Content-Type", "application/json")
+    SearchModel.find({},(err, docs)=>{
+        if(err) console.log(err)
+        res.send(docs.map(doc => {
+            return _.pick(doc,['searchTerm','timeSearched'])
+        }))
+    })
+
 })
 
 // Fallback

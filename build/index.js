@@ -20,6 +20,14 @@ var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _search_model = require('./inc/search_model');
+
+var _search_model2 = _interopRequireDefault(_search_model);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('dotenv').config();
@@ -33,8 +41,12 @@ app.get('/', function (req, res) {
 
 // /api/imagesearch/lolcats%20funny?offset=10
 app.get('/api/imagesearch/:search(*)/\?*', function (req, res) {
-    console.log(req.params.search);
-    console.log(req.query);
+
+    var search = new _search_model2.default({ searchTerm: req.params.search });
+    search.save(function (err, entry) {
+        if (err) console.log(err);
+    });
+
     var options = {
         url: 'https://api.imgur.com/3/gallery/search/?q=' + _querystring2.default.escape(req.params.search) + '&' + _querystring2.default.stringify(req.query),
         headers: { 'Authorization': 'Client-ID ' + process.env.IMGUR_CLIENT_KEY }
@@ -43,10 +55,22 @@ app.get('/api/imagesearch/:search(*)/\?*', function (req, res) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var info = JSON.parse(body);
-            res.send(info);
+            res.send(info.data.map(function (result) {
+                return _lodash2.default.pick(result, ['title', 'link']);
+            }));
         }
     }
     (0, _request2.default)(options, callback);
+});
+
+app.get('/api/latest/imagesearch', function (req, res) {
+    res.header("Content-Type", "application/json");
+    _search_model2.default.find({}, function (err, docs) {
+        if (err) console.log(err);
+        res.send(docs.map(function (doc) {
+            return _lodash2.default.pick(doc, ['searchTerm', 'timeSearched']);
+        }));
+    });
 });
 
 // Fallback
