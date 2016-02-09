@@ -28,7 +28,7 @@ var app = (0, _express2.default)();
 app.set('port', process.env.PORT || 5000);
 
 app.get('/', function (req, res) {
-    res.send('FCC Image Search');
+    res.send('FCC Image Search - pagination parameter is page, not offset');
 });
 
 // /api/imagesearch/lolcats%20funny?offset=10

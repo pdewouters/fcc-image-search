@@ -10,7 +10,7 @@ const app = express()
 app.set('port', (process.env.PORT || 5000))
 
 app.get('/', (req, res) => {
-    res.send('FCC Image Search')
+    res.send('FCC Image Search - pagination parameter is page, not offset')
 })
 
 // /api/imagesearch/lolcats%20funny?offset=10
