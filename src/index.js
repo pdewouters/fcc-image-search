@@ -20,7 +20,7 @@ app.get('/api/imagesearch/:search(*)/\?*', (req, res) => {
     search.save((err,entry) => {
         if (err) console.log(err)
     })
-    
+
     const options = {
         url: 'https://api.imgur.com/3/gallery/search/?q=' + querystring.escape(req.params.search) + '&' +  querystring.stringify(req.query),
         headers: {'Authorization': 'Client-ID ' + process.env.IMGUR_CLIENT_KEY}
