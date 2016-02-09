@@ -1,9 +1,5 @@
 'use strict';
 
-var _https = require('https');
-
-var _https2 = _interopRequireDefault(_https);
-
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);

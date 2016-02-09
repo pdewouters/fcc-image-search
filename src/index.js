@@ -1,6 +1,5 @@
 'use strict'
 require('dotenv').config();
-import https from 'https'
 import express from 'express'
 import querystring from 'querystring'
 import request from 'request'
