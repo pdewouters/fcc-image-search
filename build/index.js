@@ -12,10 +12,6 @@ var _querystring = require('querystring');
 
 var _querystring2 = _interopRequireDefault(_querystring);
 
-var _concatStream = require('concat-stream');
-
-var _concatStream2 = _interopRequireDefault(_concatStream);
-
 var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
